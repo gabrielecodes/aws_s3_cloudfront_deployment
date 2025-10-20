@@ -4,7 +4,7 @@ provider "aws" {
 
 # The bucket for the website
 resource "aws_s3_bucket" "static_site" {
-  bucket = "my-static-site-bucket-12345" # Change this to a unique name
+  bucket = var.bucket_name
 }
 
 resource "aws_s3_bucket_ownership_controls" "static_site" {
@@ -15,7 +15,7 @@ resource "aws_s3_bucket_ownership_controls" "static_site" {
   }
 }
 
-# Private bucket
+# Private bucket access control
 resource "aws_s3_bucket_public_access_block" "static_site" {
   bucket                  = aws_s3_bucket.static_site.id
   block_public_acls       = true
@@ -25,7 +25,7 @@ resource "aws_s3_bucket_public_access_block" "static_site" {
 }
 
 # Configure the bucket for static website hosting
-resource "aws_s3_bucket_website_configuration" "static_site" {
+resource "aws_s3_bucket_website_configuration" "static_site_config" {
   bucket = aws_s3_bucket.static_site.id
 
   index_document {
@@ -38,7 +38,7 @@ resource "aws_s3_bucket_website_configuration" "static_site" {
 }
 
 # Define the policy for the bucket
-resource "aws_s3_bucket_policy" "static_site" {
+resource "aws_s3_bucket_policy" "static_site_policy" {
   bucket = aws_s3_bucket.static_site.id
 
   policy = jsonencode({
@@ -60,4 +60,6 @@ resource "aws_s3_bucket_policy" "static_site" {
       }
     ]
   })
+
+  depends_on = [aws_cloudfront_distribution.cdn]
 }
