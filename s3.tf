@@ -1,14 +1,15 @@
 provider "aws" {
-  region = "us-east-1"
+  region = var.region
+  alias  = var.region
 }
 
 # The bucket for the website
-resource "aws_s3_bucket" "static_site" {
+resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
 }
 
 resource "aws_s3_bucket_ownership_controls" "static_site" {
-  bucket = aws_s3_bucket.static_site.id
+  bucket = aws_s3_bucket.bucket.id
 
   rule {
     object_ownership = "BucketOwnerEnforced"
@@ -29,11 +30,11 @@ resource "aws_s3_bucket_website_configuration" "static_site_config" {
   bucket = aws_s3_bucket.static_site.id
 
   index_document {
-    suffix = "index.html"
+    suffix = variable.main_page
   }
 
   error_document {
-    key = "error.html"
+    key = variable.error_page
   }
 }
 
