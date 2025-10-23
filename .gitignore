@@ -7,7 +7,6 @@
 # State files (sensitive, but sometimes shared — see notes below)
 *.tfstate
 *.tfstate.*
-*.tfvars
 
 # Crash log files
 crash.log
